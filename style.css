@@ -4,35 +4,51 @@ html, body {
     overflow: hidden;
     background: #0a141e; /* color base */
     font-family: 'Montserrat', sans-serif;
-    color: rgb(110, 255, 250);
+    color: rgb(160, 249, 246);
   }
 
   canvas {
     display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
   }
 
-  /* Texto curatorial sutil */
-/*   .overlay {
+
+.overlay {
     position: absolute;
     bottom: 3vh;
     left: 3vw;
-    max-width: 400px;
-    font-size: 1rem;
+    max-width: 45vw; /* ajusta para mobile */
+    font-size: 1.3vw; /* escala según ancho */
     line-height: 1.4;
     opacity: 0.7;
     transition: opacity 2s ease;
+    z-index: 10;
   }
- */
-  .overlay, .overlay2 {
+  
+  .overlay2 {
     position: absolute;
-    max-width: 400px;
-    font-size: 1rem;
+    bottom: 3vh;
+    right: 3vw;
+    max-width: 45vw;
+    font-size: 1.3vw;
     line-height: 1.4;
-    opacity: 0; /* empieza invisible */
-    transition: all 2s ease;
-    pointer-events: none; /* para que no bloqueen el mouse sobre canvas */
+    opacity: 0.7;
+    transition: opacity 2s ease;
+    z-index: 10;
   }
   
   .overlay p, .overlay2 p {
     margin: 0;
+  }
+
+
+  @media (max-width: 600px) {
+    .overlay, .overlay2 {
+      max-width: 80vw;
+      font-size: 5vw;
+      line-height: 1.3;
+    }
   }

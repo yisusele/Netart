@@ -16,13 +16,19 @@ function preload() {
 
     fontLunayari = loadFont("assets/fonts/MacondoSwashCaps-Regular.ttf");
 fontFestival = loadFont("assets/fonts/NovaSquare-Regular.ttf");
-  }
+ambientSound = loadSound("assets/sonido.wav"); // tu sonido  
+
+}
   
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   imageMode(CENTER);
   noCursor();
+
+  ambientSound.setLoop(true);
+  ambientSound.setVolume(0.1); // volumen muy bajo
+  ambientSound.play();
 
   // Inicializamos algunas partículas en pantalla
   for (let i = 0; i < 50; i++) {
@@ -36,6 +42,7 @@ function draw() {
   // Pulso y brillo del logo
   pulse = sin(frameCount * 0.070);
   let pulseSize = map(pulse, -1, 1, 5,15);
+
 
   // Partículas
   for (let i = particles.length - 1; i >= 0; i--) {
@@ -68,7 +75,7 @@ function draw() {
   // Logo y halo difuso
   push();
   translate(width / 2, height / 2);
-  let baseSize = min(width, height) * 0.35;
+  let baseSize = min(width, height) * 0.35; // recalculado siempre
   let logoSize = baseSize + pulseSize;
 
   noStroke();
@@ -173,3 +180,16 @@ class Particle {
     return this.life < 0;
   }
 }
+
+function mousePressed() {
+    if (!ambientSound.isPlaying()) {
+      ambientSound.play();
+    }
+  }
+  
+  function touchStarted() {
+    if (!ambientSound.isPlaying()) {
+      ambientSound.play();
+    }
+    return false; // evita scroll
+  }
