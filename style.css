@@ -1,0 +1,38 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #0a141e; /* color base */
+    font-family: 'Montserrat', sans-serif;
+    color: rgb(110, 255, 250);
+  }
+
+  canvas {
+    display: block;
+  }
+
+  /* Texto curatorial sutil */
+/*   .overlay {
+    position: absolute;
+    bottom: 3vh;
+    left: 3vw;
+    max-width: 400px;
+    font-size: 1rem;
+    line-height: 1.4;
+    opacity: 0.7;
+    transition: opacity 2s ease;
+  }
+ */
+  .overlay, .overlay2 {
+    position: absolute;
+    max-width: 400px;
+    font-size: 1rem;
+    line-height: 1.4;
+    opacity: 0; /* empieza invisible */
+    transition: all 2s ease;
+    pointer-events: none; /* para que no bloqueen el mouse sobre canvas */
+  }
+  
+  .overlay p, .overlay2 p {
+    margin: 0;
+  }
