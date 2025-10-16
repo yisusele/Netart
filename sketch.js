@@ -26,13 +26,14 @@ let ambientSound;
 
 // 💡 Adaptación automática para mobile
 if (/Mobi|Android/i.test(navigator.userAgent)) {
-  maxParticles = 400;                 // 🔹 menos partículas aún
-  randomParticleInterval = 100;       // 🔹 menos frecuencia de spawn
-  attractionStrength = 0.0006;        // 🔹 menos fuerza del cálculo
-  attractionRadiusSq = 30000;         // 🔹 radio menor → menos cómputo
-  pulseSpeed = 0.05;                  // 🔹 pulso más lento
-  console.log("🌐 Modo mobile optimizado");  
-
+  maxParticles = 250;           // 🔹 muchas menos partículas
+  randomParticleInterval = 120; // 🔹 menos spawn
+  attractionStrength = 0.0004;  // 🔹 cálculos más suaves
+  attractionRadiusSq = 25000;
+  pulseSpeed = 0.05;
+  pixelDensity(0.5);            // 🔹 reduce resolución del canvas (gran mejora)
+  frameRate(30);                // 🔹 limita FPS para no saturar CPU/GPU
+  console.log("🌐 Modo mobile ultra optimizado");
 }
 
 function preload() {
@@ -121,18 +122,20 @@ image(logo, 0, 0, logoSize, logoSize);
 
   // 🩶 Texto del festival
   if (showText) {
-    let alpha = map(reveal, 200, 255, 0, 255);
-    fill(255, alpha);
-    textAlign(CENTER, CENTER);
+  let alpha = map(reveal, 200, 255, 0, 255);
+  fill(255, alpha);
+  textAlign(CENTER, CENTER);
 
-    textFont(fontLunayari);
-    textSize(min(width, height) * 0.08);
-    text("LUNAYARI", width / 2, height * 0.75);
+  textFont(fontLunayari);
+  let titleSize = max(min(width, height) * 0.08, 42); // tamaño mínimo 42px
+  textSize(titleSize);
+  text("LUNAYARI", width / 2, height * 0.75);
 
-    textFont(fontFestival);
-    textSize(min(width, height) * 0.05);
-    text("festival", width / 2, height * 0.85);
-  }
+  textFont(fontFestival);
+  let subtitleSize = max(min(width, height) * 0.05, 28);
+  textSize(subtitleSize);
+  text("festival", width / 2, height * 0.85);
+}
 }
 
 // ✨ Eventos del mouse/touch
@@ -147,13 +150,15 @@ function touchMoved() {
   if (touches.length === 0) return false;
 
   const now = millis();
-  if (now - lastTouchTime > 150) {
-    addParticleAt(touches[0].x, touches[0].y);
-    reveal += 0.5;
+  if (now - lastTouchTime > touchThrottle) {
+    let t = touches[0];
+    addParticleAt(t.x, t.y);
+    reveal += 0.8;
     if (reveal > 255) { reveal = 255; showText = true; }
     lastTouchTime = now;
   }
 
+  // 🔹 Evita re-renderes forzados por scroll
   return false;
 }
 
