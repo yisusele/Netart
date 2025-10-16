@@ -64,7 +64,6 @@ function setup() {
 
 function draw() {
   background(10, 20, 30);
-  clear();
    /* if (!started) {                                            //   ESTO ES PARA PROBAR UNA PANTALLA PREVIA
     background(10, 20, 30);
     fill(255);
@@ -239,3 +238,4 @@ function touchStarted() {
 function mousePressed() { startExperience(); }
 
 function touchStarted() { startExperience(); return false; } */
+
