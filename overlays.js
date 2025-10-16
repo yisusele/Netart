@@ -12,7 +12,7 @@ const overlayRight = document.querySelector('.overlay2');
 overlayLeft.style.left = '3vw';
 overlayLeft.style.bottom = '3vh';
 overlayRight.style.right = '3vw';
-overlayRight.style.bottom = '86vh';
+overlayRight.style.bottom = '3vh';
 
 function fadeOverlay(overlay) {
   overlay.style.opacity = 0.8;
