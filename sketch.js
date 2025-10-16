@@ -23,7 +23,7 @@ let ambientSound;
 
 // 💡 Adaptación automática para mobile
 if (/Mobi|Android/i.test(navigator.userAgent)) {
-  maxParticles = 800;                 // menos partículas
+  maxParticles = 500;                 // menos partículas
   randomParticleInterval = 90;        // menos frecuencia
   attractionStrength = 0.0008;        // menos carga de CPU
   console.log("🌐 Modo mobile activado");
