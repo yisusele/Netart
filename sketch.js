@@ -50,7 +50,7 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   imageMode(CENTER);
   noCursor();
-  pixelDensity(1);
+  pixelDensity(displayDensity());
   frameRate(45);
 
   ambientSound.setLoop(true);
@@ -99,19 +99,24 @@ function draw() {
   // 🌕 Logo y halo
   push();
   translate(width / 2, height / 2);
-  let baseSize = min(width, height) * 0.35;
-  let logoSize = baseSize + pulseSize;
+let baseSize = min(width, height) * 0.35;
+let logoSize = baseSize + pulseSize;
 
-  noStroke();
-  for (let i = 0; i < 10; i++) {
-    let alpha = map(i, 0, 10, 40, 0);
-    let haloSize = logoSize + i * 40;
-    fill(180, 220, 255, alpha);
-    ellipse(0, 0, haloSize, haloSize);
-  }
+// 🔹 Revelar halo junto con el logo
+let haloAlpha = map(reveal, 0, 255, 0, 80); // intensidad general
+let haloLayers = 8;
 
-  tint(255, reveal);
-  image(logo, 0, 0, logoSize, logoSize);
+noStroke();
+for (let i = 0; i < haloLayers; i++) {
+  let alpha = map(i, 0, haloLayers, haloAlpha, 0);
+  let haloSize = logoSize + i * 40 + sin(frameCount * 0.05) * 5; // pequeño pulso
+  fill(180, 220, 255, alpha);
+  ellipse(0, 0, haloSize, haloSize);
+}
+
+// Logo
+tint(255, reveal);
+image(logo, 0, 0, logoSize, logoSize);
   pop();
 
   // 🩶 Texto del festival
@@ -142,7 +147,7 @@ function touchMoved() {
   if (touches.length === 0) return false;
 
   const now = millis();
-  if (now - lastTouchTime > touchThrottle) {
+  if (now - lastTouchTime > 150) {
     addParticleAt(touches[0].x, touches[0].y);
     reveal += 0.5;
     if (reveal > 255) { reveal = 255; showText = true; }
@@ -204,6 +209,7 @@ class Particle {
   }
 
   display() {
+    noSmooth();
     noStroke();
     fill(180, 220, 255, this.life);
     ellipse(this.x, this.y, this.size);

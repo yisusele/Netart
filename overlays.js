@@ -8,11 +8,20 @@ const overlayRight = document.querySelector('.overlay2');
   overlay.style.pointerEvents = 'none';
 });
 
-// Fijamos las esquinas
-overlayLeft.style.left = '3vw';
-overlayLeft.style.bottom = '3vh';
-overlayRight.style.right = '3vw';
-overlayRight.style.bottom = '3vh';
+if (!/Mobi|Android/i.test(navigator.userAgent)) {
+  overlayLeft.style.left = '3vw';
+  overlayLeft.style.bottom = '3vh';
+  overlayRight.style.right = '3vw';
+  overlayRight.style.bottom = '3vh';
+} else {
+  overlayLeft.style.left = '50%';
+  overlayLeft.style.top = '5vh';
+  overlayLeft.style.transform = 'translateX(-50%)';
+  overlayRight.style.left = '50%';
+  overlayRight.style.bottom = '5vh';
+  overlayRight.style.transform = 'translateX(-50%)';
+}
+
 
 function fadeOverlay(overlay) {
   overlay.style.opacity = 0.8;
