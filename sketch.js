@@ -3,45 +3,38 @@
 // Optimizado para desktop y mobile
 //----------------------------------------------------------
 
-let logo;
+let logo, ambientSound;
 let reveal = 0;
 let showText = false;
 let particles = [];
 let pulse = 0;
 let lastParticleTime = 0;
+let lastTouchTime = 0;
+/* let started = false; */
 
 // 🎛️ Variables ajustables
-let maxParticles = 2500;              // cantidad máxima de partículas
-let randomParticleInterval = 50;      // ms entre partículas aleatorias
-let attractionStrength = 0.001;       // fuerza de atracción del mouse (↑ más impacto)
-let attractionRadiusSq = 60000;       // radio de influencia del mouse (↑ más área)
-let pulseSpeed = 0.07;                // velocidad del pulso del logo
-let pulseAmount = 15;                 // amplitud del pulso
+let maxParticles = 2500;
+let randomParticleInterval = 50;
+let attractionStrength = 0.001;
+let attractionRadiusSq = 60000;
+let pulseSpeed = 0.07;
+let pulseAmount = 15;
+const touchThrottle = 120;
 
-let lastTouchTime = 0;     // declarar esto globalmente arriba del código
-const touchThrottle = 120; // ms entre eventos efectivos
-
-// 🔊 Elementos de sonido
-let ambientSound;
-
-// 💡 Adaptación automática para mobile
-if (/Mobi|Android/i.test(navigator.userAgent)) {
-  maxParticles = 250;           // 🔹 muchas menos partículas
-  randomParticleInterval = 120; // 🔹 menos spawn
-  attractionStrength = 0.0004;  // 🔹 cálculos más suaves
+// 💡 Detectar mobile antes de setup()
+const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+if (isMobile) {
+  maxParticles = 250;
+  randomParticleInterval = 120;
+  attractionStrength = 0.0004;
   attractionRadiusSq = 25000;
   pulseSpeed = 0.05;
-  pixelDensity(0.5);            // 🔹 reduce resolución del canvas (gran mejora)
-  frameRate(30);                // 🔹 limita FPS para no saturar CPU/GPU
+  pulseAmount = 10;
   console.log("🌐 Modo mobile ultra optimizado");
 }
 
 function preload() {
-  logo = loadImage("assets/lunayari.png",
-    () => console.log("Logo cargado OK"),
-    () => console.error("Error cargando logo")
-  );
-
+  logo = loadImage("assets/lunayari.png");
   fontLunayari = loadFont("assets/fonts/MacondoSwashCaps-Regular.ttf");
   fontFestival = loadFont("assets/fonts/NovaSquare-Regular.ttf");
   ambientSound = loadSound("assets/sonido.wav");
@@ -51,14 +44,19 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   imageMode(CENTER);
   noCursor();
-  pixelDensity(displayDensity());
-  frameRate(45);
+
+  if (isMobile) {
+    pixelDensity(0.75); // 🔹 no tan agresivo, mantiene buena nitidez
+    frameRate(30);
+  } else {
+    pixelDensity(displayDensity());
+    frameRate(45);
+  }
 
   ambientSound.setLoop(true);
   ambientSound.setVolume(0.1);
-  ambientSound.play();
 
-  // Crear partículas iniciales
+  // Partículas iniciales
   for (let i = 0; i < 50; i++) {
     particles.push(new Particle(random(width), random(height)));
   }
@@ -67,6 +65,15 @@ function setup() {
 function draw() {
   background(10, 20, 30);
 
+   /* if (!started) {                                            //   ESTO ES PARA PROBAR UNA PANTALLA PREVIA
+    background(10, 20, 30);
+    fill(255);
+    textAlign(CENTER, CENTER);
+    textSize(24);
+    text("🔮 Toca para entrar a LUNAYARI", width/2, height/2);
+    return;
+  } */
+
   // 💫 Pulso del logo
   pulse = sin(frameCount * pulseSpeed);
   let pulseSize = map(pulse, -1, 1, 5, pulseAmount);
@@ -74,7 +81,7 @@ function draw() {
   // 🔹 Dibujar partículas
   for (let i = particles.length - 1; i >= 0; i--) {
     let p = particles[i];
-    if (mouseX || touches.length > 0) {
+    if (mouseIsPressed || touches.length > 0) {
       let mx = mouseX || touches[0].x;
       let my = mouseY || touches[0].y;
       p.update(mx, my);
@@ -97,54 +104,49 @@ function draw() {
     lastParticleTime = millis();
   }
 
-  // 🌕 Logo y halo
+  // 🌕 Logo + halo revelándose juntos
   push();
   translate(width / 2, height / 2);
-let baseSize = min(width, height) * 0.35;
-let logoSize = baseSize + pulseSize;
+  let baseSize = min(width, height) * 0.35;
+  let logoSize = baseSize + pulseSize;
 
-// 🔹 Revelar halo junto con el logo
-let haloAlpha = map(reveal, 0, 255, 0, 80); // intensidad general
-let haloLayers = 8;
+  let haloAlpha = map(reveal, 0, 255, 0, 80);
+  noStroke();
+  for (let i = 0; i < 8; i++) {
+    let alpha = map(i, 0, 8, haloAlpha, 0);
+    let haloSize = logoSize + i * 40 + sin(frameCount * 0.05) * 5;
+    fill(180, 220, 255, alpha);
+    ellipse(0, 0, haloSize, haloSize);
+  }
 
-noStroke();
-for (let i = 0; i < haloLayers; i++) {
-  let alpha = map(i, 0, haloLayers, haloAlpha, 0);
-  let haloSize = logoSize + i * 40 + sin(frameCount * 0.05) * 5; // pequeño pulso
-  fill(180, 220, 255, alpha);
-  ellipse(0, 0, haloSize, haloSize);
-}
-
-// Logo
-tint(255, reveal);
-image(logo, 0, 0, logoSize, logoSize);
+  tint(255, reveal);
+  image(logo, 0, 0, logoSize, logoSize);
   pop();
 
-  // 🩶 Texto del festival
+  // 🩶 Texto adaptativo
   if (showText) {
-  let alpha = map(reveal, 200, 255, 0, 255);
-  fill(255, alpha);
-  textAlign(CENTER, CENTER);
+    let alpha = map(reveal, 200, 255, 0, 255);
+    fill(255, alpha);
+    textAlign(CENTER, CENTER);
 
-  textFont(fontLunayari);
-  let titleSize = max(min(width, height) * 0.08, 42); // tamaño mínimo 42px
-  textSize(titleSize);
-  text("LUNAYARI", width / 2, height * 0.75);
+    textFont(fontLunayari);
+    let titleSize = max(min(width, height) * 0.08, 42);
+    textSize(titleSize);
+    text("LUNAYARI", width / 2, height * 0.75);
 
-  textFont(fontFestival);
-  let subtitleSize = max(min(width, height) * 0.05, 28);
-  textSize(subtitleSize);
-  text("festival", width / 2, height * 0.85);
+    textFont(fontFestival);
+    let subtitleSize = max(min(width, height) * 0.05, 28);
+    textSize(subtitleSize);
+    text("festival", width / 2, height * 0.85);
+  }
 }
-}
 
-// ✨ Eventos del mouse/touch
+// ✨ Interacción
 function mouseMoved() {
   addParticleAt(mouseX, mouseY);
-  reveal += 0.4;
+  reveal += 0.6;
   if (reveal > 255) { reveal = 255; showText = true; }
 }
-
 
 function touchMoved() {
   if (touches.length === 0) return false;
@@ -157,20 +159,14 @@ function touchMoved() {
     if (reveal > 255) { reveal = 255; showText = true; }
     lastTouchTime = now;
   }
-
-  // 🔹 Evita re-renderes forzados por scroll
   return false;
 }
 
-
-// 🪶 Agregar partículas al interactuar
 function addParticleAt(x, y) {
   const now = millis();
   if (now - lastParticleTime > 120 && particles.length < maxParticles) {
     particles.push(new Particle(x, y));
-    if (!/Mobi|Android/i.test(navigator.userAgent)) {
-      particles.push(new Particle(x, y)); // solo en desktop
-    }
+    if (!isMobile) particles.push(new Particle(x, y));
     lastParticleTime = now;
   }
 }
@@ -179,7 +175,7 @@ function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
 
-// 🌫️ Clase Partícula
+// 🌫️ Partículas
 class Particle {
   constructor(x, y) {
     this.x = x;
@@ -206,7 +202,6 @@ class Particle {
     this.vy *= 0.98;
     this.life -= 1;
 
-    // Teletransportarse si sale del canvas
     if (this.x < 0) this.x = width;
     if (this.x > width) this.x = 0;
     if (this.y < 0) this.y = height;
@@ -214,7 +209,6 @@ class Particle {
   }
 
   display() {
-    noSmooth();
     noStroke();
     fill(180, 220, 255, this.life);
     ellipse(this.x, this.y, this.size);
@@ -225,12 +219,22 @@ class Particle {
   }
 }
 
-// 🖱️ Audio: iniciar tras interacción del usuario
+// 🔊 Audio
 function mousePressed() {
   if (!ambientSound.isPlaying()) ambientSound.play();
 }
-
 function touchStarted() {
   if (!ambientSound.isPlaying()) ambientSound.play();
   return false;
 }
+
+/* function startExperience() {
+  if (!started) {
+    started = true;
+    ambientSound.loop();
+    ambientSound.setVolume(0.1);
+  }
+}
+
+function mousePressed() { startExperience(); }
+function touchStarted() { startExperience(); return false; } */
