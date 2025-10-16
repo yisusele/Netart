@@ -30,7 +30,7 @@ html, body {
   
   .overlay2 {
     position: absolute;
-    bottom: 88vh;
+    bottom: 3vh;
     right: 3vw;
     max-width: 45vw;
     font-size: 1.3vw;
@@ -44,11 +44,21 @@ html, body {
     margin: 0;
   }
 
-
-  @media (max-width: 600px) {
-    .overlay, .overlay2 {
-      max-width: 80vw;
-      font-size: 5vw;
-      line-height: 1.3;
-    }
+  /* 📱 Mobile */
+@media (max-width: 768px) {
+  .overlay, .overlay2 {
+    position: absolute;
+    max-width: 90vw;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
   }
+
+  .overlay {
+    top: 5vh;
+  }
+
+  .overlay2 {
+    bottom: 5vh;
+  }
+}

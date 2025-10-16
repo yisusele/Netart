@@ -18,15 +18,21 @@ let attractionRadiusSq = 60000;       // radio de influencia del mouse (↑ más
 let pulseSpeed = 0.07;                // velocidad del pulso del logo
 let pulseAmount = 15;                 // amplitud del pulso
 
+let lastTouchTime = 0;     // declarar esto globalmente arriba del código
+const touchThrottle = 120; // ms entre eventos efectivos
+
 // 🔊 Elementos de sonido
 let ambientSound;
 
 // 💡 Adaptación automática para mobile
 if (/Mobi|Android/i.test(navigator.userAgent)) {
-  maxParticles = 500;                 // menos partículas
-  randomParticleInterval = 90;        // menos frecuencia
-  attractionStrength = 0.0008;        // menos carga de CPU
-  console.log("🌐 Modo mobile activado");
+  maxParticles = 400;                 // 🔹 menos partículas aún
+  randomParticleInterval = 100;       // 🔹 menos frecuencia de spawn
+  attractionStrength = 0.0006;        // 🔹 menos fuerza del cálculo
+  attractionRadiusSq = 30000;         // 🔹 radio menor → menos cómputo
+  pulseSpeed = 0.05;                  // 🔹 pulso más lento
+  console.log("🌐 Modo mobile optimizado");  
+
 }
 
 function preload() {
@@ -131,12 +137,21 @@ function mouseMoved() {
   if (reveal > 255) { reveal = 255; showText = true; }
 }
 
+
 function touchMoved() {
-  if (touches.length > 0) addParticleAt(touches[0].x, touches[0].y);
-  reveal += 1;
-  if (reveal > 255) { reveal = 255; showText = true; }
+  if (touches.length === 0) return false;
+
+  const now = millis();
+  if (now - lastTouchTime > touchThrottle) {
+    addParticleAt(touches[0].x, touches[0].y);
+    reveal += 0.5;
+    if (reveal > 255) { reveal = 255; showText = true; }
+    lastTouchTime = now;
+  }
+
   return false;
 }
+
 
 // 🪶 Agregar partículas al interactuar
 function addParticleAt(x, y) {
