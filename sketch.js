@@ -24,7 +24,7 @@ const touchThrottle = 120;
 // 💡 Detectar mobile antes de setup()
 const isMobile = /Mobi|Android/i.test(navigator.userAgent);
 if (isMobile) {
-  maxParticles = 150;
+  maxParticles = 50;
   randomParticleInterval = 120;
   attractionStrength = 0.0004;
   attractionRadiusSq = 25000;
