@@ -16,6 +16,8 @@ html, body {
   }
 
 
+
+  
 .overlay {
     position: absolute;
     bottom: 3vh;
@@ -44,21 +46,15 @@ html, body {
     margin: 0;
   }
 
-  /* 📱 Mobile */
+  /* Mobile */
 @media (max-width: 768px) {
-  .overlay, .overlay2 {
-    position: absolute;
-    max-width: 90vw;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-  }
-
   .overlay {
-    top: 5vh;
+    padding: 0 5vw;
   }
-
-  .overlay2 {
-    bottom: 5vh;
+  .overlay h1 {
+    font-size: clamp(2rem, 9vw, 3.5rem);
+  }
+  .overlay p {
+    font-size: clamp(1rem, 5vw, 1.8rem);
   }
 }

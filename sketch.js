@@ -24,7 +24,7 @@ const touchThrottle = 120;
 // 💡 Detectar mobile antes de setup()
 const isMobile = /Mobi|Android/i.test(navigator.userAgent);
 if (isMobile) {
-  maxParticles = 250;
+  maxParticles = 150;
   randomParticleInterval = 120;
   attractionStrength = 0.0004;
   attractionRadiusSq = 25000;
@@ -63,15 +63,8 @@ function setup() {
 }
 
 function draw() {
+  clear();
   background(10, 20, 30);
-   /* if (!started) {                                            //   ESTO ES PARA PROBAR UNA PANTALLA PREVIA
-    background(10, 20, 30);
-    fill(255);
-    textAlign(CENTER, CENTER);
-    textSize(24);
-    text("🔮 Toca para entrar a LUNAYARI", width/2, height/2);
-    return;
-  } */
 
   // 💫 Pulso del logo
   pulse = sin(frameCount * pulseSpeed);
@@ -80,13 +73,18 @@ function draw() {
   // 🔹 Dibujar partículas
   for (let i = particles.length - 1; i >= 0; i--) {
     let p = particles[i];
-    if (mouseIsPressed || touches.length > 0) {
-      let mx = mouseX || touches[0].x;
-      let my = mouseY || touches[0].y;
-      p.update(mx, my);
-    } else {
-      p.update();
+
+    // Detectar mouse o touch sin necesidad de click
+    let mx, my;
+    if (touches.length > 0) {
+      mx = touches[0].x;
+      my = touches[0].y;
+    } else if (mouseX >= 0 && mouseX <= width && mouseY >= 0 && mouseY <= height) {
+      mx = mouseX;
+      my = mouseY;
     }
+
+    p.update(mx, my);
     p.display();
 
     if (p.isDead()) {
@@ -103,7 +101,7 @@ function draw() {
     lastParticleTime = millis();
   }
 
-  // 🌕 Logo + halo revelándose juntos
+  // 🌕 Logo + halo
   push();
   translate(width / 2, height / 2);
   let baseSize = min(width, height) * 0.35;
@@ -122,7 +120,7 @@ function draw() {
   image(logo, 0, 0, logoSize, logoSize);
   pop();
 
-  // 🩶 Texto adaptativo
+  // 🩶 Texto
   if (showText) {
     let alpha = map(reveal, 200, 255, 0, 255);
     fill(255, alpha);
@@ -143,7 +141,7 @@ function draw() {
 // ✨ Interacción
 function mouseMoved() {
   addParticleAt(mouseX, mouseY);
-  reveal += 0.6;
+  reveal += 0.3;
   if (reveal > 255) { reveal = 255; showText = true; }
 }
 
@@ -236,6 +234,4 @@ function touchStarted() {
 }
 
 function mousePressed() { startExperience(); }
-
 function touchStarted() { startExperience(); return false; } */
-
