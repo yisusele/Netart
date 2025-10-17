@@ -25,7 +25,7 @@ const touchThrottle = 120;
 const isMobile = /Mobi|Android/i.test(navigator.userAgent);
 if (isMobile) {
   maxParticles = 50;
-  randomParticleInterval = 120;
+  randomParticleInterval = 200;
   attractionStrength = 0.0004;
   attractionRadiusSq = 25000;
   pulseSpeed = 0.05;
